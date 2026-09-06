@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Home — Trill Lookout AI Cam</title>
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Trill Lookout AI Cam" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/shell.css" />
+</head>
+<body class="has-nav watch-page">
+  <aside id="sidenav"></aside>
+  <div class="app">
+    <header class="topbar watch-top">
+      <div class="brand">
+        <div>
+          <div class="brand-name">Home</div>
+          <div class="brand-sub" id="watchSub">Waiting for the host…</div>
+        </div>
+      </div>
+      <div class="top-actions"></div>
+    </header>
+    <button class="btn ghost hidden" type="button" id="btnAllCams">All cameras</button>
+    <p class="live-scene" id="liveScene">Start a camera on the Host page to see what is happening.</p>
+    <div class="watch-wall" id="wall">
+      <div class="watch-empty">
+        <div class="empty-card reveal-card">
+          <img class="empty-logo" src="/icons/icon-192.png" alt="">
+          <h1>Live cameras</h1>
+          <p>This is Home. Live cameras, scene text, known and unknown people and animals, and DVR clips all show here. Open <strong>Host</strong> in the menu to start a camera on this device.</p>
+          <div class="empty-actions">
+            <a class="btn primary" href="/host.html">Open Host</a>
+            <a class="btn" href="/enroll.html">Enroll a face</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="home-sightings" id="homeSightings">
+      <h2>Recognized just now</h2>
+      <p class="muted small">Names and the time Lookout last saw them on a live camera.</p>
+      <div class="people-list" id="sightingList"></div>
+    </section>
+    <section class="home-faces" id="homeFaces">
+      <div class="home-face-col">
+        <h2>Known faces</h2>
+        <p class="muted small">People you enrolled, with the last time they were recognized.</p>
+        <div class="people-list" id="peopleList"></div>
+      </div>
+      <div class="home-face-col" id="unknowns">
+        <h2>Unknown faces</h2>
+        <p class="muted small">Face photos used for recognition. Tap a photo to add a name.</p>
+        <div class="unknown-list" id="unknownList"></div>
+      </div>
+    </section>
+    <section class="home-faces" id="homeAnimals">
+      <div class="home-face-col">
+        <h2>Known animals</h2>
+        <p class="muted small">Pets you have named. Labels on live cameras use these names.</p>
+        <div class="people-list" id="animalList"></div>
+      </div>
+      <div class="home-face-col" id="unknown-animals">
+        <h2>Unknown animals</h2>
+        <p class="muted small">Animal photos from live cameras. Tap a photo to add a name.</p>
+        <div class="unknown-list" id="unknownAnimalList"></div>
+      </div>
+    </section>
+    <section class="home-dvr" id="homeDvr">
+      <h2>DVR</h2>
+      <p class="muted small">Looping GIFs of clips Lookout recorded when a person, animal, or threat was detected.</p>
+      <div class="dvr-grid" id="dvrGrid"></div>
+    </section>
+    <div class="ptz-pad hidden" id="ptzPad" aria-label="Look around">
+      <button type="button" class="ptz-btn" data-ptz="up" aria-label="Look up">▲</button>
+      <button type="button" class="ptz-btn" data-ptz="left" aria-label="Look left">◀</button>
+      <button type="button" class="ptz-btn ptz-stop" data-ptz="stop" aria-label="Stop">●</button>
+      <button type="button" class="ptz-btn" data-ptz="right" aria-label="Look right">▶</button>
+      <button type="button" class="ptz-btn" data-ptz="down" aria-label="Look down">▼</button>
+      <button type="button" class="ptz-btn" data-ptz="zoomIn" aria-label="Zoom in">＋</button>
+      <button type="button" class="ptz-btn" data-ptz="zoomOut" aria-label="Zoom out">－</button>
+    </div>
+    <div class="alert-dock" id="alertDock"></div>
+  </div>
+  <div class="gif-pop hidden" id="gifPop" role="alert">
+    <img id="gifPopImg" alt="Alert preview" />
+    <div class="gif-pop-meta">
+      <strong id="gifPopTitle">Alert</strong>
+      <span id="gifPopBody"></span>
+    </div>
+    <button type="button" class="btn" id="gifPopClose">Close</button>
+  </div>
+  <div class="modal hidden" id="nameModal">
+    <div class="modal-card name-card" role="dialog" aria-labelledby="nameModalTitle">
+      <img id="nameModalImg" alt="" />
+      <h2 id="nameModalTitle">Name this person</h2>
+      <p class="muted small" id="nameModalHint">Type a name, then Save.</p>
+      <label for="nameModalInput">Name</label>
+      <input type="text" id="nameModalInput" autocomplete="name" placeholder="Name" />
+      <div class="row-btns">
+        <button type="button" class="btn primary" id="nameModalSave">Save</button>
+        <button type="button" class="btn" id="nameModalCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast-wrap" id="toasts"></div>
+  <script type="module" src="/js/watch.js"></script>
+</body>
+</html>

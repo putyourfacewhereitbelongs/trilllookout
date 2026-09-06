@@ -1,0 +1,11 @@
+{
+  "enabled": false,
+  "preset": "gmail",
+  "host": "smtp.gmail.com",
+  "port": 587,
+  "secure": false,
+  "user": "",
+  "pass": "",
+  "from": "",
+  "to": ""
+}

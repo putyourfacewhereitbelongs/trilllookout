@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Videos — Trill Lookout AI Cam</title>
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Trill Lookout AI Cam" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/shell.css" />
+</head>
+<body class="library-page has-nav">
+  <aside id="sidenav"></aside>
+  <div class="app">
+  <header class="topbar">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <div class="brand-name">Trill Lookout AI Cam</div>
+        <div class="brand-sub">DVR library</div>
+      </div>
+    </a>
+    <div class="status-cluster">
+      <span class="pill" id="libCount">0 clips</span>
+      <span class="pill" id="libDisk">—</span>
+    </div>
+    <div class="top-actions">
+      <button class="btn ghost" type="button" id="btnShareApp">Share</button>
+      <a class="btn ghost" href="/">Live view</a>
+    </div>
+  </header>
+
+  <main class="library">
+    <aside class="library-side">
+      <h1>Saved video</h1>
+      <p class="muted small">Every clip recorded after detection starts is stored on this machine. Filter by day or camera, then play, download, or delete.</p>
+      <label>Source
+        <select id="filterSource">
+          <option value="">All sources</option>
+          <option value="camera">Camera</option>
+          <option value="screen">Screen</option>
+        </select>
+      </label>
+      <label>Day
+        <select id="filterDay">
+          <option value="">All days</option>
+        </select>
+      </label>
+      <button class="btn" type="button" id="btnRefresh">Refresh</button>
+    </aside>
+    <section class="library-main">
+      <div class="video-grid" id="videoGrid"></div>
+    </section>
+  </main>
+
+  <div class="modal hidden" id="playerModal">
+    <div class="modal-card wide theater">
+      <h2 id="playerTitle">Clip</h2>
+      <p id="playerMeta" class="muted small"></p>
+      <video id="playerVideo" controls playsinline></video>
+      <div class="row-btns">
+        <a class="btn" id="playerDownload" download>Download</a>
+        <button class="btn danger" type="button" id="playerDelete">Delete</button>
+        <button class="btn primary" type="button" id="playerClose">Close</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal hidden" id="shareModal">
+    <div class="modal-card">
+      <h2>Share Trill Lookout AI Cam</h2>
+      <p class="muted small">Anyone on your network with this link can open the live view.</p>
+      <img id="shareQr" alt="QR code" class="share-qr" />
+      <ul class="share-urls" id="shareUrls"></ul>
+      <div class="row-btns">
+        <button class="btn primary" type="button" id="shareCopy">Copy link</button>
+        <button class="btn" type="button" id="shareNative">Share…</button>
+        <button class="btn" type="button" id="shareClose">Close</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast-wrap" id="toasts"></div>
+  </div>
+  <script type="module" src="/js/videos.js"></script>
+</body>
+</html>

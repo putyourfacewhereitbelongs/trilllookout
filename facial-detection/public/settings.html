@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings — Trill Lookout AI Cam</title>
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-title" content="Trill Lookout AI Cam" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/shell.css" />
+</head>
+<body class="has-nav">
+  <aside id="sidenav"></aside>
+  <div class="app">
+    <main class="settings-page">
+      <h1>Settings</h1>
+      <p class="muted small">Email, cameras, recording, and the tutorial. Links always follow <span id="originLabel"></span>.</p>
+
+      <section class="section-card" id="email">
+        <h2>Notification email</h2>
+        <p class="muted small" id="googleStatus">Connect Google so this host can send alert GIFs from your Gmail.</p>
+        <div class="row-btns">
+          <button class="btn primary" type="button" id="btnGoogle">Connect Google</button>
+          <button class="btn" type="button" id="btnGoogleDisconnect">Disconnect</button>
+          <button class="btn" type="button" id="btnTestEmail">Send test</button>
+        </div>
+        <div class="google-setup" id="google">
+          <p class="muted small">1. Create an OAuth client (Web) in Google Cloud with Gmail API. 2. Add this exact Authorized redirect URI:</p>
+          <p><code id="googleRedirect">/api/google/callback</code>
+            <button class="btn tiny" type="button" id="btnCopyRedirect">Copy URI</button></p>
+          <label>Client ID <input id="googleClientId" autocomplete="off" placeholder="….apps.googleusercontent.com" /></label>
+          <label>Client secret <input id="googleClientSecret" type="password" autocomplete="off" /></label>
+          <div class="row-btns">
+            <button class="btn tiny" type="button" id="btnSaveGoogleClient">Save client</button>
+          </div>
+          <p class="muted small" id="googleNeed"></p>
+        </div>
+        <form id="emailForm" class="enroll">
+          <label class="check"><input type="checkbox" name="enabled" /> Send email alerts</label>
+          <label>To <input name="to" type="email" placeholder="you@example.com" /></label>
+          <details>
+            <summary class="muted small">SMTP fallback (only if you skip Google)</summary>
+            <label>Preset
+              <select name="preset">
+                <option value="gmail">Gmail</option>
+                <option value="outlook">Outlook</option>
+                <option value="custom">Custom</option>
+              </select>
+            </label>
+            <label>Host <input name="host" /></label>
+            <label>Port <input name="port" type="number" value="587" /></label>
+            <label>Username <input name="user" /></label>
+            <label>Password <input name="pass" type="password" autocomplete="new-password" /></label>
+            <label>From <input name="from" /></label>
+          </details>
+          <button class="btn primary" type="submit">Save email</button>
+        </form>
+      </section>
+
+      <section class="section-card" id="cameras">
+        <h2>IP / Wyze cameras</h2>
+        <p class="muted small">Scan the LAN or paste an HTTP snapshot / MJPEG URL. Test opens a PIP preview — Save appears only if the picture loads. RTSP is not used (no ffmpeg).</p>
+        <div class="row-btns">
+          <button class="btn" type="button" id="btnScan">Scan network</button>
+        </div>
+        <p class="muted small" id="scanStatus"></p>
+        <div id="scanResults"></div>
+        <form id="camForm" class="enroll">
+          <label>Name <input name="name" placeholder="Porch Wyze" required /></label>
+          <label>Brand
+            <select name="brand">
+              <option value="">Generic IP</option>
+              <option value="wyze">Wyze</option>
+              <option value="hikvision">Hikvision</option>
+              <option value="dahua">Dahua</option>
+              <option value="axis">Axis</option>
+              <option value="amcrest">Amcrest</option>
+              <option value="reolink">Reolink</option>
+              <option value="foscam">Foscam</option>
+            </select>
+          </label>
+          <label>HTTP URL <input name="url" placeholder="http://192.168.1.20/snapshot.jpg" required /></label>
+          <label>Username <span class="opt">if the camera asks</span> <input name="username" /></label>
+          <label>Password <input name="password" type="password" /></label>
+          <div class="row-btns">
+            <button class="btn" type="button" id="btnTestCam">Test link</button>
+            <button class="btn primary hidden" type="submit" id="btnSaveCam">Save camera</button>
+          </div>
+        </form>
+        <div id="savedCams"></div>
+      </section>
+
+      <section class="section-card" id="nvr">
+        <h2>Recording &amp; alerts</h2>
+        <form id="nvrForm" class="settings">
+          <label class="check"><input type="checkbox" name="nvrContinuous" /> Always record (ignore person/animal rule)</label>
+          <label class="check"><input type="checkbox" name="recordOnPerson" /> Record when a person is detected</label>
+          <label class="check"><input type="checkbox" name="recordOnAnimal" /> Record when an animal is detected</label>
+          <label class="check"><input type="checkbox" name="recordOnThreat" /> Record on fall / theft / fight</label>
+          <label class="check"><input type="checkbox" name="alertOnPerson" /> Alert on person</label>
+          <label class="check"><input type="checkbox" name="alertOnAnimal" /> Alert on animal</label>
+          <label class="check"><input type="checkbox" name="alertOnThreat" /> Alert on labeled threat</label>
+          <label class="check"><input type="checkbox" name="objectDetection" /> Live object boxes</label>
+          <label class="check"><input type="checkbox" name="threatDetection" /> Threat detection</label>
+          <label class="check"><input type="checkbox" name="nightVision" /> Color night vision</label>
+          <label>Alert cooldown (sec) <span class="val" data-for="alertCooldownSec"></span>
+            <input type="range" name="alertCooldownSec" min="30" max="600" step="15" />
+          </label>
+          <button class="btn primary" type="submit">Save recording settings</button>
+        </form>
+      </section>
+
+      <section class="section-card" id="accuracy">
+        <h2>Face accuracy</h2>
+        <form id="settingsForm" class="settings">
+          <label>Detector
+            <select name="detector">
+              <option value="ssd">Accurate (SSD)</option>
+              <option value="tiny">Fast (tiny)</option>
+            </select>
+          </label>
+          <label>Match distance <span class="val" data-for="matchThreshold"></span>
+            <input type="range" name="matchThreshold" min="0.32" max="0.62" step="0.01" />
+          </label>
+          <label class="check"><input type="checkbox" name="autoCaptureUnknowns" /> Auto-capture unknown faces</label>
+          <button class="btn primary" type="submit">Save accuracy</button>
+        </form>
+      </section>
+
+      <section class="section-card" id="tutorial">
+        <h2>Tutorial</h2>
+        <p class="muted small">Replay the walkthrough (skip and next are inside it).</p>
+        <button class="btn primary" type="button" id="btnReplay">Replay tutorial</button>
+      </section>
+    </main>
+  </div>
+  <div class="pip-box hidden" id="pipBox">
+    <p class="muted small">PIP preview</p>
+    <img id="pipImg" alt="camera preview" />
+    <div class="row-btns" style="margin-top:8px">
+      <button class="btn tiny" type="button" id="pipClose">Close</button>
+    </div>
+  </div>
+  <div class="toast-wrap" id="toasts"></div>
+  <script type="module" src="/js/settings-page.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Share by QR — Trill Lookout AI Cam</title>
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Trill Lookout AI Cam" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/shell.css" />
+</head>
+<body class="has-nav">
+  <aside id="sidenav"></aside>
+  <div class="app">
+    <main class="settings-page share-page">
+      <h1>Share by QR</h1>
+      <p class="muted small">Anyone who scans this opens the live cameras on <strong>this</strong> host — the same origin and cameras this device is running.</p>
+      <section class="section-card qr-hero">
+        <img id="shareQrBig" class="share-qr share-qr-lg" alt="QR code to open live cameras" src="/api/share/qr.png" />
+        <p class="mono" id="sharePrimary"></p>
+        <div class="row-btns">
+          <button class="btn primary" type="button" id="btnShareQr">Share by QR</button>
+          <button class="btn" type="button" id="btnCopyShare">Copy link</button>
+          <button class="btn" type="button" id="btnNativeShare">Share…</button>
+        </div>
+      </section>
+      <section class="section-card">
+        <h2>Also on this host</h2>
+        <ul class="share-urls" id="shareUrls"></ul>
+      </section>
+    </main>
+  </div>
+  <div class="toast-wrap" id="toasts"></div>
+  <script type="module" src="/js/share-page.js"></script>
+</body>
+</html>

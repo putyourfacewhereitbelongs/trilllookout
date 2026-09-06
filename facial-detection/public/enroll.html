@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enroll face — Trill Lookout AI Cam</title>
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-title" content="Trill Lookout AI Cam" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/shell.css" />
+</head>
+<body class="has-nav">
+  <aside id="sidenav"></aside>
+  <div class="app">
+    <main class="enroll-page">
+      <h1>Enroll a face</h1>
+      <p class="muted">Uses this device’s camera. Take 3+ front-facing shots, then name the person.</p>
+      <div class="section-card">
+        <div class="cam-tile" style="height:280px;position:relative">
+          <video id="enrollCam" autoplay muted playsinline></video>
+        </div>
+        <div class="row-btns" style="margin-top:10px">
+          <button class="btn" type="button" id="btnStartCam">Start camera</button>
+          <button class="btn primary" type="button" id="btnTake">Take photo</button>
+          <button class="btn" type="button" id="btnFlip">Flip camera</button>
+        </div>
+        <div class="thumbs" id="shots"></div>
+      </div>
+      <form id="enrollSave" class="enroll section-card">
+        <label>Name <input name="name" required maxlength="80" placeholder="Full name" /></label>
+        <label>Relationship / profile <input name="relationship" maxlength="80" placeholder="Daughter, neighbor, staff…" /></label>
+        <label>Phone <span class="opt">optional</span> <input name="phone" maxlength="40" placeholder="Mobile" /></label>
+        <label>Notes <input name="notes" maxlength="500" placeholder="How you know them" /></label>
+        <button class="btn primary" type="submit">Save person</button>
+      </form>
+      <form id="animalSave" class="enroll section-card">
+        <h2>Name an animal</h2>
+        <p class="muted small">Use a live photo of the cat or dog. Lookout will label that kind with this name.</p>
+        <label>Name <input name="name" required maxlength="80" placeholder="Whiskers" /></label>
+        <label>Kind
+          <select name="species">
+            <option value="cat">Cat</option>
+            <option value="dog">Dog</option>
+            <option value="bird">Bird</option>
+            <option value="horse">Horse</option>
+            <option value="sheep">Sheep</option>
+            <option value="cow">Cow</option>
+          </select>
+        </label>
+        <button class="btn primary" type="submit">Save animal (uses last photo)</button>
+      </form>
+    </main>
+  </div>
+  <div class="toast-wrap" id="toasts"></div>
+  <script src="/face-api.min.js"></script>
+  <script type="module" src="/js/enroll-page.js"></script>
+</body>
+</html>

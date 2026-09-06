@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Host — Trill Lookout AI Cam</title>
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Trill Lookout AI Cam" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/shell.css" />
+</head>
+<body class="has-nav host-page">
+  <aside id="sidenav"></aside>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <div class="brand-name">Trill Lookout AI Cam</div>
+          <div class="brand-sub">DVR · scene AI · faces</div>
+        </div>
+      </div>
+      <div class="status-cluster">
+        <span class="pill" id="modelStatus"><i class="led"></i> models</span>
+        <span class="pill" id="streamStatus"><i class="led"></i> stream</span>
+        <span class="pill" id="faceCount">0 faces</span>
+        <span class="pill" id="motionPill"><i class="led"></i> motion</span>
+        <span class="pill" id="soundPill"><i class="led"></i> sound</span>
+        <span class="pill" id="aiPill"><i class="led"></i> scene ai</span>
+        <span class="pill" id="threatPill"><i class="led"></i> threat</span>
+        <span class="pill" id="recPill"><i class="led"></i> dvr</span>
+        <span class="pill mono" id="fpsPill">0 fps</span>
+      </div>
+      <div class="top-actions">
+        <button class="btn ghost hidden" id="btnInstall" type="button">Install app</button>
+        <button class="btn ghost" id="btnShareApp" type="button">Share</button>
+        <a class="btn ghost" id="btnShareQrTop" href="/share.html">Share by QR</a>
+        <a class="btn ghost" id="btnVideos" href="/videos.html">Videos</a>
+        <button class="btn ghost" id="btnCameraTab" type="button">Open camera tab</button>
+        <button class="btn ghost" id="btnHelp" type="button">How it works</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="stage-wrap">
+        <div class="stage" id="stage">
+          <div class="feeds cam-grid" id="feeds">
+            <div class="feed" data-feed="screen">
+              <video id="videoScreen" autoplay muted playsinline></video>
+              <canvas id="overlayScreen"></canvas>
+              <div class="feed-label">Camera</div>
+            </div>
+            <div class="feed hidden" data-feed="camera">
+              <video id="videoCamera" autoplay muted playsinline></video>
+              <canvas id="overlayCamera"></canvas>
+              <div class="feed-label">Camera</div>
+            </div>
+          </div>
+          <div class="stage-empty" id="stageEmpty">
+            <div class="empty-card">
+              <div class="scan-ring"></div>
+              <h1>Turn this computer into the host camera</h1>
+              <p>
+                Use this screen as a camera (or this device’s camera). People and animals start DVR recording. Falls, theft, and fights are labeled. Viewers open <strong>Live cameras</strong> — it looks like a real camera wall, not a shared screen.
+              </p>
+              <div class="empty-actions">
+                <button class="btn primary" id="btnShare" type="button">Use this screen as a camera</button>
+                <button class="btn" id="btnCam" type="button">Use this camera</button>
+                <button class="btn" id="btnBoth" type="button">Screen + camera</button>
+              </div>
+              <div class="empty-actions host-mobile-extra">
+                <button class="btn primary" id="btnBroadcast" type="button">Use this device as a camera</button>
+                <button class="btn" id="btnShareCam" type="button">Share this camera</button>
+              </div>
+              <p class="hint">Needs localhost or HTTPS. Other phones/PCs use the Live cameras link in the sidebar (auto-updates on your domain).</p>
+            </div>
+          </div>
+        </div>
+        <div class="host-chrome">
+          <div class="threat-banner hidden" id="threatBanner"></div>
+          <div class="live-caption" id="liveCaption">Start a feed to see live scene analysis.</div>
+          <div class="stage-hud">
+            <div class="hud-left">
+              <span id="hudSource">idle</span>
+              <span id="hudStrict"></span>
+              <span id="hudMotion"></span>
+            </div>
+            <div class="hud-right host-actions">
+              <button class="btn tiny" id="btnSnapSave" type="button" disabled>Snap</button>
+              <button class="btn tiny" id="btnRecClip" type="button" disabled>Record</button>
+              <button class="btn tiny" id="btnSnapshot" type="button" disabled>Snapshot unknowns</button>
+              <button class="btn tiny danger" id="btnStop" type="button" disabled>Stop</button>
+            </div>
+          </div>
+        </div>
+        <div class="alert-dock" id="alertDock"></div>
+        <section class="host-roster" id="hostRoster">
+          <div class="home-face-col">
+            <h2>Known faces</h2>
+            <div class="people-list" id="hostKnownFaces"></div>
+          </div>
+          <div class="home-face-col">
+            <h2>Unknown faces</h2>
+            <div class="unknown-list" id="hostUnknownFaces"></div>
+          </div>
+          <div class="home-face-col">
+            <h2>Known animals</h2>
+            <div class="people-list" id="hostKnownAnimals"></div>
+          </div>
+          <div class="home-face-col">
+            <h2>Unknown animals</h2>
+            <div class="unknown-list" id="hostUnknownAnimals"></div>
+          </div>
+        </section>
+        <div class="live-log" id="liveLog" aria-live="polite"></div>
+      </section>
+
+      <aside class="side">
+        <section class="section-card host-ip" id="hostCams">
+          <h2>Add IP cameras</h2>
+          <p class="muted small">Scan the LAN or paste an HTTP snapshot / MJPEG URL. Test opens a PIP preview — Save appears only if the picture loads. RTSP is not used.</p>
+          <div class="row-btns">
+            <button class="btn" type="button" id="btnScan">Scan network</button>
+          </div>
+          <p class="muted small" id="scanStatus"></p>
+          <div id="scanResults"></div>
+          <form id="camForm" class="enroll">
+            <label>Name <input name="name" placeholder="Porch Wyze" required /></label>
+            <label>Brand
+              <select name="brand">
+                <option value="">Generic IP</option>
+                <option value="wyze">Wyze</option>
+                <option value="hikvision">Hikvision</option>
+                <option value="dahua">Dahua</option>
+                <option value="axis">Axis</option>
+                <option value="amcrest">Amcrest</option>
+                <option value="reolink">Reolink</option>
+                <option value="foscam">Foscam</option>
+              </select>
+            </label>
+            <label>HTTP URL <input name="url" placeholder="http://192.168.1.20/snapshot.jpg" required /></label>
+            <label>Username <span class="opt">if the camera asks</span> <input name="username" /></label>
+            <label>Password <input name="password" type="password" /></label>
+            <div class="row-btns">
+              <button class="btn" type="button" id="btnTestCam">Test link</button>
+              <button class="btn primary hidden" type="submit" id="btnSaveCam">Save camera</button>
+            </div>
+          </form>
+          <div id="savedCams"></div>
+        </section>
+        <nav class="tabs five" role="tablist">
+          <button class="tab on" data-tab="people" type="button">Known</button>
+          <button class="tab" data-tab="unknowns" type="button">Unknown <span class="badge" id="unknownBadge">0</span></button>
+          <button class="tab" data-tab="nvr" type="button">DVR <span class="badge" id="nvrBadge">0</span></button>
+          <button class="tab" data-tab="enroll" type="button">Add</button>
+          <button class="tab" data-tab="settings" type="button">Settings</button>
+        </nav>
+
+        <div class="panel on" id="panel-people">
+          <div class="panel-head">
+            <h2>Known people</h2>
+            <span class="muted" id="peopleCount">0</span>
+          </div>
+          <div class="search-row">
+            <input id="peopleSearch" type="search" placeholder="Filter by name…" autocomplete="off" />
+          </div>
+          <div class="people-list" id="peopleList"></div>
+          <h3 class="subhead">Named animals</h3>
+          <form id="animalForm" class="enroll">
+            <label>Name <input name="name" required maxlength="80" placeholder="Whiskers" /></label>
+            <label>Kind
+              <select name="species">
+                <option value="cat">Cat</option>
+                <option value="dog">Dog</option>
+                <option value="bird">Bird</option>
+                <option value="horse">Horse</option>
+                <option value="sheep">Sheep</option>
+                <option value="cow">Cow</option>
+              </select>
+            </label>
+            <div class="row-btns">
+              <button class="btn tiny primary" type="submit">Name animal</button>
+            </div>
+          </form>
+          <div class="people-list" id="animalList"></div>
+        </div>
+
+        <div class="panel" id="panel-unknowns">
+          <div class="panel-head">
+            <h2>Who is this?</h2>
+            <button class="btn tiny" id="btnReconcile" type="button">Re-check matches</button>
+          </div>
+          <p class="muted small">Unknown faces are photographed many times and grouped if they look alike. Known people are never recaptured. All shots show in the gallery.</p>
+          <div class="unknown-list" id="unknownList"></div>
+        </div>
+
+        <div class="panel" id="panel-nvr">
+          <div class="panel-head">
+            <h2>DVR &amp; alerts</h2>
+            <span class="muted small" id="nvrDisk">—</span>
+          </div>
+          <p class="muted small">Video records when a person or animal is in view, or when a fall, theft, or fight is labeled — not on motion alone. Alerts send a 10-second GIF, scene analysis, email (after Connect Google), and a push if the app is installed.</p>
+          <div class="row-btns">
+            <a class="btn primary" href="/videos.html">Open video library</a>
+            <button class="btn" type="button" id="btnNotify">Enable notifications</button>
+          </div>
+
+          <form id="nvrForm" class="settings nvr-block">
+            <label class="check"><input type="checkbox" name="nvrContinuous" /> Record everything locally (DVR)</label>
+            <label class="check"><input type="checkbox" name="motionEnabled" /> Detect movement</label>
+            <label class="check"><input type="checkbox" name="soundEnabled" /> Detect sound</label>
+            <label class="check"><input type="checkbox" name="objectDetection" /> Live object / animal boxes</label>
+            <label class="check"><input type="checkbox" name="nightVision" /> Color night vision (optional, never B&amp;W)</label>
+            <label class="check"><input type="checkbox" name="threatDetection" /> Fall / theft / threat detection</label>
+            <label class="check"><input type="checkbox" name="recordOnPerson" /> Record when a person is detected</label>
+            <label class="check"><input type="checkbox" name="recordOnAnimal" /> Record when an animal is detected</label>
+            <label class="check"><input type="checkbox" name="recordOnThreat" /> Record on fall / theft / fight</label>
+            <label class="check"><input type="checkbox" name="alertOnPerson" /> Alert on person</label>
+            <label class="check"><input type="checkbox" name="alertOnAnimal" /> Alert on animal</label>
+            <label class="check"><input type="checkbox" name="alertOnMotion" /> Alert on movement</label>
+            <label class="check"><input type="checkbox" name="alertOnSound" /> Alert on sound</label>
+            <label class="check"><input type="checkbox" name="alertOnThreat" /> Alert on fall or threat</label>
+            <label>Motion sensitivity (lower = more sensitive) <span class="val" data-for="motionThreshold"></span>
+              <input type="range" name="motionThreshold" min="8" max="40" step="1" />
+            </label>
+            <label>Sound sensitivity (lower = more sensitive) <span class="val" data-for="soundThreshold"></span>
+              <input type="range" name="soundThreshold" min="0.015" max="0.16" step="0.005" />
+            </label>
+            <label>Alert cooldown (sec) <span class="val" data-for="alertCooldownSec"></span>
+              <input type="range" name="alertCooldownSec" min="30" max="600" step="15" />
+            </label>
+            <label>Keep recordings (days) <span class="val" data-for="nvrRetentionDays"></span>
+              <input type="range" name="nvrRetentionDays" min="1" max="30" step="1" />
+            </label>
+            <div class="row-btns">
+              <button class="btn primary" type="submit">Save NVR settings</button>
+            </div>
+          </form>
+
+          <form id="emailForm" class="enroll nvr-block">
+            <h3 class="subhead">Notification email</h3>
+            <p class="muted small" id="googleStatus">Connect Google to send alerts from your Gmail in one click.</p>
+            <div class="row-btns">
+              <button class="btn primary" type="button" id="btnGoogle">Connect Google</button>
+              <button class="btn" type="button" id="btnGoogleDisconnect">Disconnect</button>
+            </div>
+            <details class="google-setup">
+              <summary>Google Cloud client (required once)</summary>
+              <p class="muted small">Create an OAuth client in Google Cloud (Gmail API). Authorized redirect: <code id="googleRedirect">/api/google/callback</code>. Paste the IDs, save, then Connect Google.</p>
+              <label>Client ID
+                <input id="googleClientId" autocomplete="off" placeholder="….apps.googleusercontent.com" />
+              </label>
+              <label>Client secret
+                <input id="googleClientSecret" type="password" autocomplete="off" placeholder="secret" />
+              </label>
+              <button class="btn tiny" type="button" id="btnSaveGoogleClient">Save client</button>
+            </details>
+            <label class="check"><input type="checkbox" name="enabled" /> Send email alerts</label>
+            <label>To (picked inbox)
+              <input name="to" type="email" placeholder="you@example.com" autocomplete="off" />
+            </label>
+            <label>SMTP preset
+              <select name="preset">
+                <option value="gmail">Gmail</option>
+                <option value="outlook">Outlook / Microsoft 365</option>
+                <option value="custom">Custom SMTP</option>
+              </select>
+            </label>
+            <label>Host
+              <input name="host" placeholder="smtp.gmail.com" autocomplete="off" />
+            </label>
+            <div class="split-fields">
+              <label>Port
+                <input name="port" type="number" min="1" max="65535" value="587" />
+              </label>
+              <label class="check port-check"><input type="checkbox" name="secure" /> TLS (465)</label>
+            </div>
+            <label>Username
+              <input name="user" placeholder="SMTP username" autocomplete="off" />
+            </label>
+            <label>Password / app password
+              <input name="pass" type="password" placeholder="unchanged if left blank" autocomplete="new-password" />
+            </label>
+            <label>From <span class="opt">optional</span>
+              <input name="from" placeholder="Lookout &lt;you@example.com&gt;" autocomplete="off" />
+            </label>
+            <div class="row-btns">
+              <button class="btn primary" type="submit">Save email</button>
+              <button class="btn" type="button" id="btnTestEmail">Send test</button>
+            </div>
+            <p class="muted small">Prefer Connect Google above. Otherwise Gmail needs an App Password, not your login password. Mail is sent by this machine — nothing is uploaded to a cloud DVR. Alerts attach a 10-second GIF plus a description of people, animals, objects, and threats.</p>
+          </form>
+
+          <h3 class="subhead">Motion alerts</h3>
+          <div class="event-list" id="eventList"></div>
+
+          <h3 class="subhead">Recent recordings</h3>
+          <p class="muted small"><a href="/videos.html">Open the full video library</a> to play every saved clip.</p>
+          <div class="segment-list" id="segmentList"></div>
+        </div>
+
+        <div class="panel" id="panel-enroll">
+          <div class="panel-head">
+            <h2>Manual enroll</h2>
+          </div>
+          <form id="enrollForm" class="enroll">
+            <label>Name
+              <input name="name" required maxlength="80" placeholder="Full name" autocomplete="off" />
+            </label>
+            <label>Facebook profile <span class="opt">optional</span>
+              <input name="facebookUrl" maxlength="300" placeholder="https://www.facebook.com/username" autocomplete="off" />
+            </label>
+            <label>Notes <span class="opt">optional</span>
+              <input name="notes" maxlength="500" placeholder="How you know them" autocomplete="off" />
+            </label>
+            <label>Direct image URL <span class="opt">optional — server fetches it</span>
+              <input name="imageUrl" maxlength="500" placeholder="https://…/photo.jpg or fbcdn.net link" autocomplete="off" />
+            </label>
+            <div class="drop" id="dropZone">
+              <input id="photoInput" type="file" accept="image/*" multiple hidden />
+              <p><strong>Drop photos</strong> or <button type="button" class="link" id="pickPhotos">browse</button></p>
+              <p class="muted small">3+ clear, front-facing photos cut false positives. Facebook profile pages cannot be scraped — save the photo and drop it here.</p>
+              <div class="thumbs" id="enrollThumbs"></div>
+            </div>
+            <div class="row-btns">
+              <button class="btn" type="button" id="btnGrabFace">Grab face from live feed</button>
+              <button class="btn primary" type="submit">Save person</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel" id="panel-settings">
+          <div class="panel-head">
+            <h2>Accuracy &amp; failsafe</h2>
+          </div>
+          <form id="settingsForm" class="settings">
+            <label>Detector
+              <select name="detector">
+                <option value="ssd">Accurate (SSD MobileNet)</option>
+                <option value="tiny">Fast (tiny detector)</option>
+              </select>
+            </label>
+            <label>Match distance <span class="val" data-for="matchThreshold"></span>
+              <input type="range" name="matchThreshold" min="0.32" max="0.62" step="0.01" />
+              <span class="muted small">Deep verify uses L2-normalized embeddings, fused Euclidean+cosine, top-3 gallery mean, and a hard-negative margin. Lower is stricter. Default 0.42.</span>
+            </label>
+            <label>Uncertain band <span class="val" data-for="uncertainThreshold"></span>
+              <input type="range" name="uncertainThreshold" min="0.40" max="0.70" step="0.01" />
+            </label>
+            <label>Min face size (px) <span class="val" data-for="minFaceSize"></span>
+              <input type="range" name="minFaceSize" min="20" max="200" step="2" />
+            </label>
+            <label>Frames to confirm <span class="val" data-for="consecutiveHits"></span>
+              <input type="range" name="consecutiveHits" min="2" max="12" step="1" />
+            </label>
+            <label>Detection interval (ms) <span class="val" data-for="detectionIntervalMs"></span>
+              <input type="range" name="detectionIntervalMs" min="80" max="400" step="10" />
+            </label>
+            <label class="check"><input type="checkbox" name="autoCaptureUnknowns" /> Auto-capture unknown faces</label>
+            <label class="check"><input type="checkbox" name="autoMergeUnknowns" /> Auto-merge unknowns into known people when distance is very low</label>
+            <div class="row-btns">
+              <button class="btn primary" type="submit">Save settings</button>
+            </div>
+          </form>
+          <div class="api-card">
+            <h3>Programmable API</h3>
+            <p class="muted small">From the browser console or a userscript:</p>
+            <pre class="code">FaceID.startScreen()
+FaceID.startCamera()
+FaceID.addPerson({ name, files })
+FaceID.on('detect', console.log)
+FaceID.setConfig({ matchThreshold: 0.42 })</pre>
+            <p class="muted small">REST: <code>/api/people</code>, <code>/api/unknowns</code>, <code>/api/nvr/events</code>, <code>/api/nvr/segments</code>, <code>/api/nvr/email</code>, <code>/api/google</code>, <code>/api/share</code>, <code>/api/config</code></p>
+            <div id="netInfo" class="net-info"></div>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div class="modal hidden" id="helpModal">
+    <div class="modal-card">
+      <h2>How to run Trill Lookout AI Cam</h2>
+      <ol class="steps">
+        <li>Start the server with <code>node server.js</code> and open the HTTPS URL. Install the PWA if you want home-screen + notifications.</li>
+        <li>Allow <strong>camera</strong>, <strong>microphone</strong> (for sound alerts), and <strong>notifications</strong> when asked.</li>
+        <li>Click <strong>Open camera tab</strong> — that tab is a clean full-screen camera, made to be shared — or use this camera.</li>
+        <li>Live boxes appear on people (girl / boy, or a name you enrolled), animals (cat, dog, …), and other objects. The caption under the video describes what is happening.</li>
+        <li>The DVR saves video locally as soon as detection is running. Sound, movement, falls, theft, or fights email a 10-second GIF plus the scene analysis.</li>
+        <li>Connect Google under DVR to send those emails from your Gmail. Use <strong>Share</strong> for a LAN link and QR code.</li>
+        <li>Open <strong>Videos</strong> to play every saved clip.</li>
+      </ol>
+      <p>Facebook profile <em>pages</em> are not scraped. Save the profile photo and enroll it, or paste a direct image URL. While Facebook is on the shared screen, faces in photos and videos are still detected live.</p>
+      <button class="btn primary" id="closeHelp" type="button">Got it</button>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="shareModal">
+    <div class="modal-card">
+      <h2>Share Trill Lookout AI Cam</h2>
+      <p class="muted small">Anyone on your network with this link can open the live view (they still need this machine running).</p>
+      <img id="shareQr" alt="QR code" class="share-qr" src="/api/share/qr.png" />
+      <ul class="share-urls" id="shareUrls"></ul>
+      <div class="row-btns">
+        <button class="btn primary" type="button" id="shareCopy">Copy link</button>
+        <button class="btn" type="button" id="shareNative">Share…</button>
+        <a class="btn" id="shareMail" href="#">Email link</a>
+        <button class="btn" type="button" id="shareClose">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="eventModal">
+    <div class="modal-card wide">
+      <h2 id="eventTitle">Alert</h2>
+      <p id="eventDesc" class="muted"></p>
+      <div class="event-media" id="eventMedia"></div>
+      <div class="row-btns">
+        <button class="btn" id="eventShare" type="button">Share</button>
+        <button class="btn" id="eventEmail" type="button">Email again</button>
+        <button class="btn danger" id="eventDelete" type="button">Delete</button>
+        <button class="btn primary" id="eventClose" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pip-box hidden" id="pipBox">
+    <p class="muted small">PIP preview</p>
+    <img id="pipImg" alt="camera preview" />
+    <div class="row-btns" style="margin-top:8px">
+      <button class="btn tiny" type="button" id="pipClose">Close</button>
+    </div>
+  </div>
+  <div class="toast-wrap" id="toasts"></div>
+
+  <script src="/face-api.min.js"></script>
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

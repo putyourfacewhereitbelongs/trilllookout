@@ -1,0 +1,452 @@
+/* App shell — readable AMOLED layout. Live video is never cropped (contain)
+   and chrome sits around the picture instead of on top of it. */
+
+html {
+  background: #000;
+  color-scheme: dark;
+  touch-action: pan-y;
+  overscroll-behavior: none;
+}
+
+body.has-nav {
+  display: flex !important;
+  flex-direction: row;
+  align-items: stretch !important;
+  height: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+  touch-action: pan-y;
+  overscroll-behavior: none;
+}
+
+.app {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  background: #000;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.nav-toggle { display: none !important; }
+
+.sidenav {
+  width: 232px;
+  flex-shrink: 0;
+  height: 100%;
+  max-height: 100dvh;
+  min-height: 0;
+  position: relative;
+  top: 0;
+  transform: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #000;
+  border-right: 1px solid rgba(91, 140, 255, 0.35);
+  padding: 16px 12px calc(16px + env(safe-area-inset-bottom, 0px)) 12px;
+  z-index: 40;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 8px 16px;
+  text-decoration: none;
+  color: #fff;
+}
+.nav-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  object-fit: contain;
+  background: #000;
+  border: 1px solid rgba(255, 107, 181, 0.45);
+  flex-shrink: 0;
+}
+.nav-brand .brand-name {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.25;
+}
+.nav-sub { font-size: 11px; color: #a8a8a8; }
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.nav-link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  color: #d0d0d0;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+.nav-link .nav-ico {
+  width: 22px;
+  text-align: center;
+  color: #5b8cff;
+  flex-shrink: 0;
+}
+.nav-link.on {
+  background: linear-gradient(90deg, rgba(91, 140, 255, 0.22), rgba(255, 107, 181, 0.16));
+  color: #fff;
+  border-color: rgba(91, 140, 255, 0.4);
+}
+.nav-hint {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: #8a8a8a;
+}
+.nav-foot {
+  margin-top: auto;
+  padding: 12px 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.watch-top {
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  background: #000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 16px;
+}
+.watch-top .brand-name {
+  font-size: 18px;
+  letter-spacing: 0.06em;
+}
+.watch-top .brand-sub { color: #c8c8c8; font-size: 13px; }
+
+.live-scene {
+  margin: 12px 16px;
+  padding: 14px 16px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #fff;
+  background: #000;
+  border: 1px solid rgba(91, 140, 255, 0.45);
+  border-radius: 14px;
+}
+
+.watch-wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px;
+  padding: 8px 16px 16px;
+  min-height: 280px;
+}
+
+.cam-tile {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.cam-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 200px;
+  background: #000;
+}
+
+.cam-frame video,
+.cam-frame canvas,
+.cam-frame img.live,
+.cam-tile > img.live {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.cam-caption {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  z-index: 1;
+  margin: 0;
+  padding: 10px 12px;
+  max-height: none;
+  overflow: visible;
+  pointer-events: none;
+  background: #000;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.watch-empty {
+  grid-column: 1 / -1;
+  display: grid;
+  place-items: center;
+  padding: 24px 12px 40px;
+  min-height: 48dvh;
+}
+.reveal-card {
+  max-width: 560px;
+  width: 100%;
+  text-align: left;
+  padding: 28px 24px;
+  border-radius: 20px;
+  background: #000;
+  border: 1px solid rgba(255, 107, 181, 0.4);
+  box-shadow: 0 0 0 1px rgba(91, 140, 255, 0.2);
+}
+.reveal-card h1 { font-size: 26px; margin: 12px 0 10px; color: #fff; }
+.reveal-card p,
+.empty-card p { color: #d0d0d0; font-size: 16px; line-height: 1.5; }
+.empty-card { border-color: rgba(255, 107, 181, 0.4); }
+.empty-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  object-fit: contain;
+  background: #000;
+  border: 1px solid rgba(91, 140, 255, 0.45);
+}
+.empty-inline { color: #d0d0d0; }
+
+.home-faces,
+.home-dvr,
+.home-sightings { padding: 8px 16px 24px; }
+.home-faces h2,
+.home-dvr h2,
+.home-sightings h2 {
+  font-size: 18px;
+  color: #fff;
+  margin: 0 0 6px;
+  padding-left: 10px;
+  border-left: 3px solid #ff6bb5;
+}
+.home-dvr h2,
+.home-sightings h2 { border-left-color: #5b8cff; }
+
+.host-chrome {
+  flex-shrink: 0;
+  background: #000;
+  border-top: 1px solid rgba(91, 140, 255, 0.3);
+}
+.host-chrome .threat-banner {
+  position: static !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  margin: 0;
+  border-radius: 0;
+}
+.host-chrome .live-caption {
+  position: static !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  max-height: none;
+  overflow: auto;
+  pointer-events: auto;
+  margin: 0;
+  border-radius: 0;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.host-chrome .stage-hud {
+  position: static !important;
+  background: #000;
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+}
+
+body.host-page .stage {
+  position: relative;
+  flex: 1;
+  min-height: min(58dvh, 640px);
+  overflow: hidden;
+  background: #000;
+}
+body.host-page.live-on .stage-empty,
+body.live-on .stage-empty { display: none !important; }
+body.live-on .feed-label { display: none; }
+body.host-page .feed video,
+body.host-page .feed canvas {
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+body.watch-focus .sidenav,
+body.watch-focus .watch-top,
+body.watch-focus .live-scene,
+body.watch-focus .home-faces,
+body.watch-focus .home-dvr,
+body.watch-focus .home-sightings,
+body.watch-focus .alert-dock,
+body.watch-focus .cam-caption,
+body.watch-focus .bezel {
+  display: none !important;
+}
+body.watch-focus .app { overflow: hidden; padding: 0; }
+body.watch-focus .watch-wall {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  padding: 0;
+  gap: 0;
+  min-height: 100dvh;
+  grid-template-columns: 1fr !important;
+  background: #000;
+}
+body.watch-focus .cam-tile { display: none; border: 0; border-radius: 0; }
+body.watch-focus .cam-tile.hero {
+  display: flex !important;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+body.watch-focus .cam-frame {
+  flex: 1;
+  aspect-ratio: auto;
+  min-height: 100dvh;
+}
+body.watch-focus .cam-tile.hero img.live,
+body.watch-focus .cam-tile.hero video { object-fit: contain; }
+body.watch-focus #btnAllCams {
+  position: fixed;
+  top: calc(10px + env(safe-area-inset-top, 0px));
+  left: 12px;
+  z-index: 60;
+  display: inline-flex !important;
+}
+body.watch-focus .ptz-pad { z-index: 61; }
+
+@media (max-width: 960px) {
+  html, body, body.has-nav, body.watch-page, body.host-page {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 100%;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    flex-direction: column !important;
+    touch-action: pan-y;
+  }
+  .app,
+  body.watch-page .app,
+  html.pwa .app,
+  body.pwa .app {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    flex: 1 0 auto;
+    touch-action: pan-y;
+  }
+  .sidenav {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50;
+    transform: none !important;
+    flex-direction: column !important;
+    padding: env(safe-area-inset-top, 0px) 8px 8px 8px !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid rgba(91, 140, 255, 0.4);
+    overflow: visible;
+  }
+  .nav-brand { padding: 8px 6px 6px; }
+  .nav-brand .brand-name { font-size: 14px; }
+  .nav-links {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    gap: 6px;
+    padding: 0 2px 4px;
+    touch-action: pan-x;
+  }
+  .nav-link {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+    min-height: 52px !important;
+    padding: 6px 10px;
+    font-size: 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    gap: 2px;
+  }
+  .nav-hint { display: none; }
+  .nav-foot { display: none !important; }
+  .watch-wall {
+    grid-template-columns: 1fr;
+    padding: 8px 10px 16px;
+  }
+  .cam-frame {
+    min-height: min(48dvh, 340px);
+    aspect-ratio: 16 / 9;
+  }
+  body.host-page .stage { min-height: min(48dvh, 420px); }
+  .home-faces { grid-template-columns: 1fr; }
+  .host-roster { grid-template-columns: 1fr 1fr; }
+  .layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .stage-wrap { border-right: 0; }
+  .side {
+    max-height: none;
+    overflow: visible;
+  }
+  html.pwa, html.pwa body, body.pwa {
+    height: auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+}
+
+@media (min-width: 961px) {
+  .host-mobile-extra { display: none !important; }
+  .scroll-hint { display: none !important; }
+  body.has-nav { flex-direction: row; }
+  .watch-wall {
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  }
+  body.host-page .layout {
+    min-height: calc(100dvh - 58px);
+  }
+}
+
+@media (max-width: 720px) {
+  .home-faces { grid-template-columns: 1fr; }
+}

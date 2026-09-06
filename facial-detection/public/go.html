@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Trill Lookout AI Cam</title>
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Trill Lookout AI Cam" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icons/icon-192.png" />
+  <style>
+    html, body { height: 100%; margin: 0; background: #000; color: #fff; font-family: system-ui, sans-serif; overscroll-behavior: none; }
+    .boot { display: grid; place-items: center; height: 100%; text-align: center; padding: 24px; }
+    p { color: #9aa0c0; }
+    a { color: #5b8cff; font-size: 18px; }
+  </style>
+  <script>
+    (function () {
+      var q = location.search || '';
+      if (/[?&]host=1(?:&|$)/.test(q)) {
+        try { localStorage.setItem('lookout_role', 'host'); } catch (e) {}
+        location.replace('/host.html');
+        return;
+      }
+      location.replace('/');
+    })();
+  </script>
+</head>
+<body>
+  <div class="boot">
+    <div>
+      <p>Opening live cameras…</p>
+      <p><a href="/watch.html">Live cameras</a> · <a href="/?host=1">Host</a></p>
+    </div>
+  </div>
+</body>
+</html>

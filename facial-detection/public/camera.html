@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Trill Lookout AI Cam — Camera</title>
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Trill Lookout AI Cam" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <style>
+    html, body { margin: 0; height: 100%; background: #000; color: #fff; font-family: Instrument Sans, system-ui, sans-serif; }
+    video {
+      position: fixed; inset: 0; width: 100vw; height: 100vh;
+      object-fit: contain; background: #000;
+    }
+    .bar {
+      position: fixed; left: 16px; bottom: 16px; z-index: 2;
+      display: flex; gap: 8px; align-items: center;
+      padding: 8px 12px; border-radius: 999px;
+      background: linear-gradient(90deg, rgba(91,140,255,.35), rgba(255,107,181,.32));
+      backdrop-filter: blur(10px);
+      font-size: 12px; letter-spacing: .04em;
+    }
+    button {
+      border: 0; background: #5b8cff; color: #fff; font-weight: 650;
+      border-radius: 999px; padding: 6px 10px; cursor: pointer;
+    }
+    button.pink { background: #ff6bb5; }
+    .err { position: fixed; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; }
+  </style>
+</head>
+<body>
+  <video id="cam" autoplay muted playsinline></video>
+  <div class="bar">
+    <span>TRILL LOOKOUT AI CAM</span>
+    <button id="flip" type="button">Flip</button>
+    <button class="pink" id="fs" type="button">Fullscreen</button>
+  </div>
+  <script>
+    const video = document.getElementById('cam');
+    let stream = null;
+    let useEnv = false;
+    async function start() {
+      if (stream) stream.getTracks().forEach((t) => t.stop());
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: useEnv ? { ideal: 'environment' } : { ideal: 'user' },
+            width: { ideal: (navigator.hardwareConcurrency || 4) <= 4 ? 960 : 1280 },
+            height: { ideal: (navigator.hardwareConcurrency || 4) <= 4 ? 540 : 720 }
+          }
+        });
+        video.srcObject = stream;
+        video.style.transform = 'none';
+      } catch (err) {
+        document.body.innerHTML = '<div class="err"><div><h1>Camera blocked</h1><p>' +
+          (err && err.message ? err.message : 'Permission denied') +
+          '</p><p>Use HTTPS or localhost, then allow the camera.</p></div></div>';
+      }
+    }
+    document.getElementById('flip').onclick = () => { useEnv = !useEnv; start(); };
+    document.getElementById('fs').onclick = () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+      else document.exitFullscreen();
+    };
+    start();
+  </script>
+</body>
+</html>
